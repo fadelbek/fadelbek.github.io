@@ -49,6 +49,7 @@ body {
   text-align: center;
   line-height: 140px; 
   font-size: 120px;
+  backface-visibility: hidden;
 }
 
 .tile .back {
@@ -65,7 +66,6 @@ body {
   text-align: center; /* Center text horizontally */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
-
 /* Close button styles */
 .close-btn {
   background-color: #ff9668; /* Set the background color */
@@ -188,4 +188,13 @@ body {
   }
 }
 
+#logo {
+  position: fixed; /* or absolute depending on your layout needs */
+  top: 0;
+  left: 0;
+  width: 300px; /* Adjust width as needed */
+  height: auto; /* Maintain aspect ratio */
+  z-index: 1000; /* Adjust z-index to ensure the logo appears above other content */
+  /* Additional styles such as padding, margin, etc. */
+}
 
