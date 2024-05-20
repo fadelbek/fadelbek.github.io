@@ -1,3 +1,33 @@
+#legend {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  transform: translateY(-50%);
+  border: 5px solid #ccc;
+  border-radius: 20px;
+  border-color:#1b69d5;
+  padding-top: 1px;
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: white;
+  font-family: "Salsa","Luckiest Guy", "Nerko One", cursive;
+  font-size: 30px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 30px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+}
+
 body {
   background-color: #fa5005; /* Pastel yellow background */
   font-family: "Salsa","Luckiest Guy", "Nerko One", cursive;
@@ -21,6 +51,11 @@ body {
   text-align: center;
   transform-style: preserve-3d;
   font-size: xx-large;
+  transition: transform 0.2s ease-in-out, box-shadow 0.4s ease-in-out;
+}
+
+.tile:hover{
+  transform: scale(1.05);
 }
 
 /* Apply rotation transformation when the tile is clicked */
@@ -82,6 +117,12 @@ body {
   height: 90px; /* Set width and height to create a circle */
   line-height: 70px; /* Center the X vertically */
   text-align: center; /* Center the X horizontally */
+  transition: transform 0.2s ease-in-out, box-shadow 0.4s ease-in-out;
+}
+
+/* Grow on hover */
+.close-btn:hover {
+  transform: scale(1.1);
 }
 
 .question-content{
@@ -188,13 +229,40 @@ body {
   }
 }
 
-#logo {
+.logo {
   position: fixed; /* or absolute depending on your layout needs */
   top: 0;
   left: 0;
   width: 300px; /* Adjust width as needed */
   height: auto; /* Maintain aspect ratio */
-  z-index: 1000; /* Adjust z-index to ensure the logo appears above other content */
+  z-index: 0; /* Adjust z-index to ensure the logo appears above other content */
   /* Additional styles such as padding, margin, etc. */
 }
 
+.chrono-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 100px; /* Adjust based on your image dimensions */
+  height: 100px; /* Adjust based on your image dimensions */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: none;
+  cursor: pointer;
+  padding: 0; /* Remove any padding */
+  outline: none; /* Remove the outline */
+  background-color: transparent; /* Ensure no background color */
+  transition: transform 0.2s ease-in-out, box-shadow 0.4s ease-in-out;
+}
+
+/* Grow on hover */
+.chrono-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Visual clue for click */
+.chrono-btn:active {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}

@@ -278,6 +278,24 @@ document.addEventListener('DOMContentLoaded', () => {
             tile.querySelector('.back').appendChild(questionContent);
             tile.querySelector('.back').appendChild(answersContent);
 
+            const closeButton = document.createElement('button');
+            closeButton.classList.add('close-btn');
+            closeButton.textContent = '×';
+            closeButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                handleClose(tileId);
+            });
+            tile.querySelector('.back').appendChild(closeButton);
+
+            const chronoButton = document.createElement('button');
+            chronoButton.classList.add('chrono-btn');
+            chronoButton.style.backgroundImage = 'url("img/stopwatch.png")';
+            chronoButton.addEventListener('click', () => {
+                startCountdown(tileId);
+                chronoButton.disabled = true; 
+            })
+            tile.querySelector('.back').appendChild(chronoButton);
+
             const questionData = questions[tileId - 1];
             questionContent.textContent = questionData.question;
 
@@ -290,17 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 answersContent.appendChild(answerButton);
             });
-
-            const closeButton = document.createElement('button');
-            closeButton.classList.add('close-btn');
-            closeButton.textContent = '×';
-            closeButton.addEventListener('click', (event) => {
-                event.stopPropagation();
-                handleClose(tileId);
-            });
-            tile.querySelector('.back').appendChild(closeButton);
-
-            startCountdown(tileId);
+            
+            createCountdown(tileId);
         }
     }
 
@@ -309,45 +318,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleAnswerClick(answerButton, index, tileId) {
         const tile = document.getElementById(`tile${tileId}`);
-        const questionContent = tile.querySelector('.question-content');
         const answersContent = tile.querySelector('.answers-content');
-
-        // Disable all answer buttons
-        const answerButtons = answersContent.querySelectorAll('.answer-btn');
-        answerButtons.forEach(button => {
-            button.disabled = true;
-        });
-
-        // Stop the countdown
-        stopCountdown(tileId);
-        // Stop the ticking sound
-        tickingAudio.pause();
-        tickingAudio.currentTime = 0;
-
+        
         const countdownContent = tile.querySelector('.countdown');
         const isFlashing = countdownContent.classList.contains('flash-text');
 
-        if (isFlashing) {
-            countdownContent.classList.remove('flash-text');
-            tile.querySelector('.back').classList.remove('flash-background');
+        const questionData = questions[tileId - 1];
+        if (countdownIntervals[tileId]) {  // Check if countdown is running
+            stopCountdown(tileId);
+            tickingAudio.pause();
+            tickingAudio.currentTime = 0;
+
+            if (isFlashing) {
+                countdownContent.classList.remove('flash-text');
+                tile.querySelector('.back').classList.remove('flash-background');
+            }
+
+            if (index === questionData.correct) {
+                correctAudio.play();
+                countdownContent.textContent = 'CORRECTE :D';
+                answerButton.classList.add('submitted');
+                tile.querySelector('.back').style.backgroundColor = '#14c93c';
+                
+            } else {
+                wrongAudio.play();
+                countdownContent.textContent = 'FAUX :(';
+                answerButton.classList.add('incorrect');
+                const correctAnswerButton = answersContent.querySelector(`.answer-btn:nth-child(${questionData.correct + 1})`);
+                correctAnswerButton.classList.add('correct');
+                correctAnswerButton.style.animation = 'flash 1.2s infinite';
+                tile.querySelector('.back').style.backgroundColor = '#ff5500';
+            }
+
+            // Disable all answer buttons
+            const allAnswerButtons = answersContent.querySelectorAll('.answer-btn');
+            allAnswerButtons.forEach(button => {
+                button.disabled = true;
+            });
+            
+        } else {
+            countdownContent.textContent = 'Lancer le chrono en premier!';
+            countdownContent.style.color = '#f52a48';
         }
 
-        const questionData = questions[tileId - 1];
-        if (index === questionData.correct) {
-            correctAudio.play();
-            countdownContent.textContent = 'CORRECTE :D';
-            answerButton.classList.add('submitted');
-            tile.querySelector('.back').style.backgroundColor = '#14c93c';
-        } else {
-            wrongAudio.play();
-            countdownContent.textContent = 'FAUX :(';
-            answerButton.classList.add('incorrect');
-            // Find and highlight the correct answer button
-            const correctAnswerButton = answersContent.querySelector(`.answer-btn:nth-child(${questionData.correct + 1})`);
-            correctAnswerButton.classList.add('correct');
-            correctAnswerButton.style.animation = 'flash 1.2s infinite'; // Apply animation
-            tile.querySelector('.back').style.backgroundColor = '#ff5500';
-        }
     }
 
     function stopCountdown(tileId) {
@@ -360,15 +373,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let tickingEnd = new Audio('audio/clock-millionaire-end.mp3');
     const countdownIntervals = {};
 
-    function startCountdown(tileId) {
+    function createCountdown(tileId){
         const tile = document.getElementById(`tile${tileId}`);
         const backTile = tile.querySelector('.back');
         const questionContent = tile.querySelector('.question-content');
-
         // Create the countdown element
         const countdownElement = document.createElement('div');
         countdownElement.classList.add('countdown');
         countdownElement.textContent = '20';
+
+        // Check if there's a scrollbar
+        if (backTile.scrollHeight > backTile.clientHeight) {
+            // Move the countdown element to the top
+            backTile.insertBefore(countdownElement, backTile.firstChild);
+            questionContent.style.paddingTop = '10px';
+        } else {
+            // Append the countdown element at the end
+            backTile.appendChild(countdownElement);
+        }
+    }
+
+    function startCountdown(tileId) {
+        const tile = document.getElementById(`tile${tileId}`);
+        const backTile = tile.querySelector('.back');
+        const countdownElement = backTile.querySelector('.countdown');
+
+        countdownElement.textContent = '20';
+        countdownElement.style.color = 'white';
 
         let countdownValue = 20;
 
@@ -390,16 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Store the countdown interval ID in the object
         countdownIntervals[tileId] = countdownInterval;
-
-        // Check if there's a scrollbar
-        if (backTile.scrollHeight > backTile.clientHeight) {
-            // Move the countdown element to the top
-            backTile.insertBefore(countdownElement, backTile.firstChild);
-            questionContent.style.paddingTop = '10px';
-        } else {
-            // Append the countdown element at the end
-            backTile.appendChild(countdownElement);
-        }
 
         tickingAudio.play();
     }
@@ -463,15 +484,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function assignTileColor(topic) {
         switch (topic) {
             case 'faune':
-                return '#dea759'; // Light brown
+                return '#995f0c'; // Light brown
             case 'flore':
-                return '#228B22'; // Green
+                return '#06d106'; // Green
             case 'eaux':
-                return '#378eab'; // Blue
+                return '#0000ff'; // Blue
             case 'ecologie':
                 return '#e3dc02'; // Light yellowish
             case 'special':
-                return '#7d04d9';
+                return '#9807db';
             default:
                 return 'black';
         }
