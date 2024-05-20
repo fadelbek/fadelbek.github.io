@@ -194,7 +194,7 @@ body {
   left: 0;
   width: 300px; /* Adjust width as needed */
   height: auto; /* Maintain aspect ratio */
-  z-index: 1000; /* Adjust z-index to ensure the logo appears above other content */
+  z-index: 0; /* Adjust z-index to ensure the logo appears above other content */
   /* Additional styles such as padding, margin, etc. */
 }
 
