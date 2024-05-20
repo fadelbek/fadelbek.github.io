@@ -188,7 +188,7 @@ body {
   }
 }
 
-#logo {
+.logo {
   position: fixed; /* or absolute depending on your layout needs */
   top: 0;
   left: 0;
